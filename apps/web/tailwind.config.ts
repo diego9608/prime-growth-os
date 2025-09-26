@@ -2,10 +2,12 @@ import type { Config } from 'tailwindcss'
 
 const config: Config = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../packages/ui/**/*.{js,ts,jsx,tsx}',
+    './apps/web/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './apps/web/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './apps/web/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './packages/ui/**/*.{js,ts,jsx,tsx}',
+    './packages/analytics/**/*.{js,ts,jsx,tsx}',
+    './packages/pitchkit/**/*.{js,ts,jsx,tsx}',
   ],
   darkMode: 'class',
   theme: {
