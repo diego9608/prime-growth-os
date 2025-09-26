@@ -1,93 +1,42 @@
 'use client'
+import React, {createContext, useContext, useEffect} from 'react'
 
-import React, { createContext, useContext, useEffect } from 'react'
-import Script from 'next/script'
-
-interface AnalyticsContextType {
-  trackEvent: (eventName: string, parameters?: Record<string, any>) => void
-  trackPageView: (url: string) => void
+type Ctx = {
+  trackEvent: (name: string, params?: Record<string, any>) => void
+  trackPageView: (path?: string) => void
 }
+const noop: Ctx = { trackEvent: () => {}, trackPageView: () => {} }
+const AnalyticsContext = createContext<Ctx | null>(null)
 
-const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined)
+type Gtag =
+  | ((cmd: 'js', date: Date) => void)
+  | ((cmd: 'config', id: string, params?: Record<string, any>) => void)
+  | ((cmd: 'event', action: string, params?: Record<string, any>) => void)
 
-interface AnalyticsProviderProps {
-  children: React.ReactNode
-  measurementId?: string
-}
+declare global { interface Window { dataLayer: any[]; gtag: Gtag } }
 
-declare global {
-  interface Window {
-    gtag: (
-      command: string,
-      targetId: string | Date,
-      config?: Record<string, any>
-    ) => void
-    dataLayer: any[]
-  }
-}
+const GA = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 
-export function AnalyticsProvider({ children, measurementId }: AnalyticsProviderProps) {
-  const GA_MEASUREMENT_ID = measurementId || process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
-
-  const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', eventName, parameters)
-    }
-  }
-
-  const trackPageView = (url: string) => {
-    if (typeof window !== 'undefined' && window.gtag && GA_MEASUREMENT_ID) {
-      window.gtag('config', GA_MEASUREMENT_ID, {
-        page_path: url,
-      })
-    }
-  }
-
+export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.gtag) {
-      window.dataLayer = window.dataLayer || []
-      window.gtag = function gtag() {
-        window.dataLayer.push(arguments)
-      }
-      window.gtag('js', new Date())
-      if (GA_MEASUREMENT_ID) {
-        window.gtag('config', GA_MEASUREMENT_ID)
-      }
+    if (typeof window === 'undefined') return
+    window.dataLayer = window.dataLayer || []
+    if (!window.gtag) {
+      window.gtag = ((...args: any[]) => window.dataLayer.push(args)) as Gtag
     }
-  }, [GA_MEASUREMENT_ID])
+    window.gtag('js', new Date())
+    if (GA) window.gtag('config', GA)
+  }, [])
 
-  if (!GA_MEASUREMENT_ID) {
-    return <>{children}</>
+  const value: Ctx = {
+    trackEvent: (name, params) => { if (GA && typeof window !== 'undefined') window.gtag('event', name, params) },
+    trackPageView: (path) => { if (GA && typeof window !== 'undefined') window.gtag('event', 'page_view', { page_path: path ?? window.location.pathname }) },
   }
-
-  return (
-    <AnalyticsContext.Provider value={{ trackEvent, trackPageView }}>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GA_MEASUREMENT_ID}');
-        `}
-      </Script>
-      {children}
-    </AnalyticsContext.Provider>
-  )
+  return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>
 }
 
-export function useAnalytics() {
-  const context = useContext(AnalyticsContext)
-  if (context === undefined) {
-    throw new Error('useAnalytics must be used within an AnalyticsProvider')
-  }
-  return context
+export function useAnalytics(): Ctx {
+  const ctx = useContext(AnalyticsContext)
+  return ctx ?? noop
 }
-
-export function useGAEvent() {
-  const { trackEvent } = useAnalytics()
-  return trackEvent
-}
+export const useGAEvent = () => useAnalytics().trackEvent

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { AnalyticsProvider } from '@analytics/provider'
+import Providers from '../components/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Prime Growth OS - Sistema operativo de crecimiento',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_DOMAIN ?? 'https://example.com'),
+  title: 'Alear Nexus — Prime Growth OS',
   description: 'Activa demanda. Convierte en contratos. Escala con control. Sistema probado para empresas ambiciosas.',
   keywords: 'growth, marketing, ventas, demanda, leads, conversión, sistema',
   openGraph: {
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <AnalyticsProvider>{children}</AnalyticsProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
