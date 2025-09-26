@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 20 14% 4%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .gold-gradient {
+    @apply bg-gradient-to-r from-gold-400 to-gold-600;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent;
+  }
+
+  .section-padding {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .pitch-section {
+    @apply min-h-screen flex items-center justify-center py-12;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+
+  body {
+    @apply bg-white text-black;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  .pitch-section {
+    @apply min-h-0 py-8;
+    page-break-after: always;
+  }
+
+  .pitch-section:last-child {
+    page-break-after: auto;
+  }
+}
+
+body.tv-mode {
+  cursor: none;
+  overflow: hidden;
+}
+
+body.tv-mode .no-tv {
+  display: none !important;
+}
+
+body.tv-mode .tv-only {
+  display: block !important;
+}
+
+body.tv-mode .pitch-section {
+  @apply h-screen;
+}

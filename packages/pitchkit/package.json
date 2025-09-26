@@ -1,0 +1,14 @@
+{
+  "name": "@prime-growth-os/pitchkit",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "recharts": "^2.10.3",
+    "lucide-react": "^0.303.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
