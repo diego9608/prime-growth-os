@@ -1,13 +1,13 @@
 [build]
   base = "apps/atelier"
-  command = "cd ../.. && npm install && cd apps/atelier && npm run build"
+  command = "cd ../.. && npm install && cd apps/atelier && npm install && npm run build"
   publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "18.17.0"
   NPM_FLAGS = "--legacy-peer-deps"
 
 [[headers]]
