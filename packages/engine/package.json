@@ -1,0 +1,19 @@
+{
+  "name": "@prime-growth-os/engine",
+  "version": "1.0.0",
+  "description": "Business logic and optimization algorithms for Prime Growth OS",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  },
+  "exports": {
+    ".": "./index.ts"
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "projects": [
+    {
+      "id": "proj-001",
+      "name": "Oficinas Corporativas Reforma",
+      "client": "Constructora Reforma SA",
+      "type": "comercial",
+      "budget": 2500000,
+      "startDate": "2024-01-15",
+      "endDate": "2024-06-15",
+      "status": "diseno",
+      "manager": "Arq. María González",
+      "team": ["Arq. Carlos López", "Ing. Ana Martínez", "Dis. Pablo Ruiz"],
+      "progress": 35,
+      "phases": [
+        {
+          "id": "phase-1",
+          "name": "Planificación y Concepto",
+          "description": "Desarrollo del concepto arquitectónico y planificación inicial",
+          "duration": 30,
+          "deliverables": ["Brief del proyecto", "Análisis de sitio", "Conceptos iniciales", "Presupuesto preliminar"],
+          "approvalRequired": true,
+          "status": "completada"
+        },
+        {
+          "id": "phase-2",
+          "name": "Desarrollo de Diseño",
+          "description": "Diseño detallado y documentación técnica",
+          "duration": 45,
+          "deliverables": ["Planos arquitectónicos", "Renders 3D", "Especificaciones técnicas", "Planos MEP"],
+          "approvalRequired": true,
+          "status": "en_progreso"
+        },
+        {
+          "id": "phase-3",
+          "name": "Documentación y Entrega",
+          "description": "Finalización de documentos ejecutivos y entrega",
+          "duration": 30,
+          "deliverables": ["Planos ejecutivos", "Manual de usuario", "Certificaciones", "Entrega final"],
+          "approvalRequired": true,
+          "status": "pendiente"
+        }
+      ]
+    },
+    {
+      "id": "proj-002",
+      "name": "Casa Unifamiliar Santa Fe",
+      "client": "Familia Rodríguez",
+      "type": "residencial",
+      "budget": 850000,
+      "startDate": "2024-02-01",
+      "endDate": "2024-05-01",
+      "status": "planificacion",
+      "manager": "Arq. Roberto Herrera",
+      "team": ["Arq. Laura Jiménez", "Ing. Miguel Torres"],
+      "progress": 15,
+      "phases": [
+        {
+          "id": "phase-1",
+          "name": "Planificación y Concepto",
+          "description": "Desarrollo del concepto arquitectónico y planificación inicial",
+          "duration": 20,
+          "deliverables": ["Brief del proyecto", "Análisis de sitio", "Conceptos iniciales"],
+          "approvalRequired": true,
+          "status": "en_progreso"
+        },
+        {
+          "id": "phase-2",
+          "name": "Desarrollo de Diseño",
+          "description": "Diseño detallado y documentación técnica",
+          "duration": 35,
+          "deliverables": ["Planos arquitectónicos", "Renders 3D", "Especificaciones técnicas"],
+          "approvalRequired": true,
+          "status": "pendiente"
+        },
+        {
+          "id": "phase-3",
+          "name": "Documentación y Entrega",
+          "description": "Finalización de documentos ejecutivos y entrega",
+          "duration": 20,
+          "deliverables": ["Planos ejecutivos", "Manual de usuario", "Entrega final"],
+          "approvalRequired": true,
+          "status": "pendiente"
+        }
+      ]
+    },
+    {
+      "id": "proj-003",
+      "name": "Biblioteca Universitaria",
+      "client": "Universidad Tecnológica",
+      "type": "institucional",
+      "budget": 8500000,
+      "startDate": "2024-03-01",
+      "endDate": "2024-12-01",
+      "status": "construccion",
+      "manager": "Arq. Patricia Vega",
+      "team": ["Arq. Fernando Silva", "Ing. Carmen López", "Arq. Diego Morales", "Ing. Sofía Castro"],
+      "progress": 65,
+      "phases": [
+        {
+          "id": "phase-1",
+          "name": "Planificación y Concepto",
+          "description": "Desarrollo del concepto arquitectónico y planificación inicial",
+          "duration": 45,
+          "deliverables": ["Brief del proyecto", "Análisis de sitio", "Conceptos iniciales", "Estudios de factibilidad"],
+          "approvalRequired": true,
+          "status": "completada"
+        },
+        {
+          "id": "phase-2",
+          "name": "Desarrollo de Diseño",
+          "description": "Diseño detallado y documentación técnica completa",
+          "duration": 60,
+          "deliverables": ["Planos arquitectónicos", "Planos estructurales", "Planos MEP", "Especificaciones", "Renders"],
+          "approvalRequired": true,
+          "status": "completada"
+        },
+        {
+          "id": "phase-3",
+          "name": "Construcción y Supervisión",
+          "description": "Supervisión de obra y control de calidad",
+          "duration": 150,
+          "deliverables": ["Supervisión continua", "Reportes de avance", "Control de calidad", "Certificaciones"],
+          "approvalRequired": true,
+          "status": "en_progreso"
+        },
+        {
+          "id": "phase-4",
+          "name": "Entrega y Puesta en Marcha",
+          "description": "Entrega final y puesta en operación",
+          "duration": 30,
+          "deliverables": ["Entrega de obra", "Manuales", "Capacitación", "Garantías"],
+          "approvalRequired": true,
+          "status": "pendiente"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "optimization_parameters": {
+    "channels": [
+      "Google Ads",
+      "Facebook Ads", 
+      "LinkedIn Ads",
+      "Instagram Ads",
+      "SEO Orgánico",
+      "Email Marketing",
+      "Referidos",
+      "Eventos"
+    ],
+    "monthly_budgets": [15000, 12000, 8000, 6000, 5000, 3000, 7000, 10000],
+    "targets": {
+      "total_leads": 45,
+      "conversion_rate": 0.15,
+      "target_cost_per_lead": 55,
+      "quality_threshold": 0.8
+    },
+    "constraints": {
+      "min_budget_per_channel": 2000,
+      "max_budget_per_channel": 20000,
+      "max_channels_active": 6
+    }
+  },
+  "business_rules": {
+    "sla_hours": {
+      "nuevo": 2,
+      "contactado": 24,
+      "propuesta": 72,
+      "negociacion": 120
+    },
+    "priority_weights": {
+      "alta": 3,
+      "media": 2,
+      "baja": 1
+    },
+    "project_size_multipliers": {
+      "small": 1.0,
+      "medium": 1.5,
+      "large": 2.5,
+      "enterprise": 4.0
+    }
+  },
+  "kpi_targets": {
+    "speed_to_lead_minutes": 15,
+    "cpq_72h_percentage": 95,
+    "otif_percentage": 98,
+    "dso_days": 30,
+    "margin_percentage": 35,
+    "appointments_per_day": 4,
+    "win_rate_percentage": 50
+  }
+}
