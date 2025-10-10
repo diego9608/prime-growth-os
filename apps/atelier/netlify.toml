@@ -1,6 +1,6 @@
 [build]
   base = "apps/atelier"
-  command = "cd ../.. && npm install && cd apps/atelier && npm install && npm run build"
+  command = "npm install --prefix ../.. && npm install && npm run build"
   publish = ".next"
 
 [[plugins]]
