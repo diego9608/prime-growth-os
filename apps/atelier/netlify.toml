@@ -1,6 +1,6 @@
 [build]
   base = "apps/atelier"
-  command = "npm install --prefix ../.. && npm install && npm run build"
+  command = "cd ../.. && npm install && npm -w apps/atelier install && cd apps/atelier && mkdir -p node_modules && npm run build"
   publish = ".next"
 
 [[plugins]]
@@ -8,7 +8,6 @@
 
 [build.environment]
   NODE_VERSION = "18.17.0"
-  NPM_FLAGS = "--legacy-peer-deps"
 
 [[headers]]
   for = "/*"
