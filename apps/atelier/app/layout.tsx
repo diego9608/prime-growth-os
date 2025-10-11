@@ -4,9 +4,10 @@ import './globals.css'
 import Navigation from './components/Navigation'
 
 // Validate environment variables
-if (typeof window === 'undefined') {
-  import('../lib/env-validator').then(m => m.validateEnv())
-}
+// TODO: Uncomment after configuring env vars in Netlify
+// if (typeof window === 'undefined') {
+//   import('../lib/env-validator').then(m => m.validateEnv())
+// }
 
 const inter = Inter({ subsets: ['latin'] })
 

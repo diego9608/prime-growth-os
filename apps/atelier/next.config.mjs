@@ -1,5 +1,6 @@
 // Validate environment variables at build time
-import './lib/env-validator.js'
+// TODO: Uncomment after configuring env vars in Netlify
+// import './lib/env-validator.js'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
