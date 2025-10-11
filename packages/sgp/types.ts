@@ -383,6 +383,45 @@ export interface DataSource {
 }
 
 // ============================================================================
+// BUSINESS CONSTRAINTS & GUARDRAILS
+// ============================================================================
+
+export interface BusinessConstraints {
+  // Capacity constraints
+  maxDailyCapacity: {
+    cpqProposals: number;  // Max proposals per day
+    meetings: number;      // Max meetings per day
+    implementations: number;  // Max concurrent projects
+  };
+
+  // Channel change constraints
+  maxChannelChangeRate: number;  // Max % change per day (e.g., 0.3 = 30%)
+  minChannelStability: number;   // Days before allowing major changes
+
+  // Pacing constraints
+  monthlyPacing: 'linear' | 'front_loaded' | 'back_loaded';
+  weeklySpendTargets?: number[];  // Optional weekly targets
+
+  // Platform constraints
+  platformMinimums: Map<string, number>;  // Min spend per platform
+  platformMaximums?: Map<string, number>; // Max spend per platform
+
+  // Diversification constraints
+  maxChannelConcentration: number;  // Max % in single channel (e.g., 0.5 = 50%)
+  minActiveChannels: number;        // Minimum number of active channels
+  diversityRatio: number;           // Min ratio per active channel
+}
+
+export interface GuardrailViolation {
+  type: 'capacity' | 'ramp_rate' | 'pacing' | 'platform' | 'diversity';
+  constraint: string;
+  current: number;
+  limit: number;
+  severity: 'warning' | 'error';
+  suggestion: string;
+}
+
+// ============================================================================
 // SYSTEM CONFIGURATION
 // ============================================================================
 
@@ -400,6 +439,9 @@ export interface SGPConfig {
   defaultTimeWindow: TimeWindow;
   seasonalityAdjustment: boolean;
   outlierRemoval: boolean;
+
+  // Business constraints
+  businessConstraints?: BusinessConstraints;
 
   // Notification preferences
   alertChannels: ('email' | 'slack' | 'dashboard')[];

@@ -15,9 +15,16 @@ import type {
 // SPEND OPTIMIZATION ENGINE
 // ============================================================================
 
+export type ResponseCurveMode = 'hill' | 'exponential';
+
 export class SpendOptimizer {
   private readonly MONTE_CARLO_RUNS = 1000;
   private readonly CONFIDENCE_LEVEL = 0.95;
+  private readonly responseCurveMode: ResponseCurveMode;
+
+  constructor(mode?: ResponseCurveMode) {
+    this.responseCurveMode = mode || (process.env.RESPONSE_CURVE_MODE as ResponseCurveMode) || 'hill';
+  }
 
   /**
    * Generates optimal spend allocation plan
@@ -461,9 +468,22 @@ export class SpendOptimizer {
    * Helper: Calculate return using response curve
    */
   private calculateReturn(spend: number, curve: EfficiencyCurve): number {
-    // Hill transformation: R = a * (S^b) / (c + S^b)
-    const { alpha, beta, gamma } = curve;
-    return alpha * Math.pow(spend, beta) / (gamma + Math.pow(spend, beta));
+    if (this.responseCurveMode === 'exponential') {
+      // Exponential saturation: R = a * (1 - exp(-b * spend))
+      const { alpha, beta } = curve;
+      return alpha * (1 - Math.exp(-beta * spend));
+    } else {
+      // Hill transformation: R = a * (S^b) / (c + S^b)
+      const { alpha, beta, gamma } = curve;
+      return alpha * Math.pow(spend, beta) / (gamma + Math.pow(spend, beta));
+    }
+  }
+
+  /**
+   * Helper: Calculate exponential response (alternative model)
+   */
+  private calculateExponentialResponse(spend: number, a: number, b: number): number {
+    return a * (1 - Math.exp(-b * spend));
   }
 
   /**
