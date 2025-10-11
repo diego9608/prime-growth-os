@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -12,7 +12,7 @@ interface InviteData {
   expires: number
 }
 
-export default function AcceptInvitePage() {
+function AcceptInviteContent() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -205,5 +205,17 @@ export default function AcceptInvitePage() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function AcceptInvitePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-dark-base">
+        <div className="text-text-secondary">Cargando...</div>
+      </div>
+    }>
+      <AcceptInviteContent />
+    </Suspense>
   )
 }

@@ -1,176 +1,91 @@
-# Supabase Auth Setup Guide
+# Supabase Setup for Atelier
 
-## 1. Create Supabase Project
+This guide explains how to configure Supabase authentication for the Atelier app, both locally and on Netlify.
 
-1. Go to https://supabase.com
-2. Create new project (free tier is fine)
-3. Save your credentials:
-   - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
-   - Anon Key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - Service Role Key → `SUPABASE_SERVICE_ROLE_KEY`
+## Prerequisites
 
-## 2. Database Schema
+1. A Supabase project (create one at [supabase.com](https://supabase.com))
+2. Your Supabase project URL and API keys
 
-Run these SQL commands in Supabase SQL Editor:
+## Local Development Setup
 
-```sql
--- Enable RLS
-ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
+### 1. Copy Environment Template
 
--- Organizations table
-CREATE TABLE organizations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Memberships table (users belong to organizations)
-CREATE TABLE memberships (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-  role TEXT CHECK (role IN ('owner', 'admin', 'editor', 'viewer')),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(user_id, org_id)
-);
-
--- Audit logs table (with org isolation)
-CREATE TABLE audit_logs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES auth.users(id),
-  action TEXT NOT NULL,
-  entity_type TEXT,
-  entity_id TEXT,
-  entity_title TEXT,
-  reasoning TEXT,
-  expected_impact JSONB,
-  actual_impact JSONB,
-  metadata JSONB,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Experiments table (with org isolation)
-CREATE TABLE experiments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  org_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  status TEXT CHECK (status IN ('designed', 'running', 'completed', 'abandoned')),
-  hypothesis TEXT,
-  metric TEXT,
-  baseline NUMERIC,
-  target NUMERIC,
-  current_value NUMERIC,
-  sample_size INTEGER,
-  current_sample INTEGER,
-  confidence NUMERIC,
-  start_date TIMESTAMPTZ,
-  end_date TIMESTAMPTZ,
-  result TEXT,
-  decision TEXT,
-  created_by UUID REFERENCES auth.users(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable RLS on all tables
-ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE memberships ENABLE ROW LEVEL SECURITY;
-ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE experiments ENABLE ROW LEVEL SECURITY;
+```bash
+cd apps/atelier
+cp .env.template .env.local
 ```
 
-## 3. Row Level Security (RLS) Policies
+### 2. Configure Supabase Variables
 
-```sql
--- Organizations: users can only see orgs they belong to
-CREATE POLICY "Users can view their organizations" ON organizations
-  FOR SELECT USING (
-    id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())
-  );
+Open `.env.local` and fill in your Supabase credentials:
 
--- Memberships: users can see members of their org
-CREATE POLICY "Users can view org members" ON memberships
-  FOR SELECT USING (
-    org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())
-  );
+```bash
+# Enable authentication
+NEXT_PUBLIC_FEATURE_AUTH=on
 
--- Memberships: only owners/admins can manage members
-CREATE POLICY "Owners can manage members" ON memberships
-  FOR ALL USING (
-    org_id IN (
-      SELECT org_id FROM memberships
-      WHERE user_id = auth.uid() AND role IN ('owner', 'admin')
-    )
-  );
-
--- Audit logs: users can only see their org's logs
-CREATE POLICY "Users can view org audit logs" ON audit_logs
-  FOR SELECT USING (
-    org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())
-  );
-
--- Audit logs: anyone in org can create logs
-CREATE POLICY "Users can create audit logs" ON audit_logs
-  FOR INSERT WITH CHECK (
-    org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())
-  );
-
--- Experiments: org isolation
-CREATE POLICY "Users can view org experiments" ON experiments
-  FOR SELECT USING (
-    org_id IN (SELECT org_id FROM memberships WHERE user_id = auth.uid())
-  );
-
-CREATE POLICY "Users can manage experiments" ON experiments
-  FOR ALL USING (
-    org_id IN (
-      SELECT org_id FROM memberships
-      WHERE user_id = auth.uid() AND role IN ('owner', 'admin', 'editor')
-    )
-  );
+# Supabase credentials (get these from your Supabase project settings)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 ```
 
-## 4. Seed Data
+**Where to find these values:**
+- Go to your Supabase project dashboard
+- Navigate to Settings → API
+- Copy:
+  - **Project URL** → NEXT_PUBLIC_SUPABASE_URL
+  - **anon public** key → NEXT_PUBLIC_SUPABASE_ANON_KEY
+  - **service_role** key → SUPABASE_SERVICE_ROLE_KEY (keep this secret!)
 
-```sql
--- Create Cuarzo organization
-INSERT INTO organizations (id, name) VALUES
-  ('11111111-1111-1111-1111-111111111111', 'Cuarzo Architecture');
+### 3. Test Locally
 
--- After Andrés signs up, make him owner:
--- INSERT INTO memberships (user_id, org_id, role) VALUES
---   ('[ANDRES_USER_ID]', '11111111-1111-1111-1111-111111111111', 'owner');
+```bash
+npm run dev
 ```
 
-## 5. Email Templates (Supabase Dashboard)
+Visit http://localhost:3000/auth/sign-in - you should see the login page without errors.
 
-Go to **Authentication** → **Email Templates** and customize:
+## Netlify Deployment Setup
 
-### Invite User
-```html
-<h2>You've been invited to Alear OS</h2>
-<p>{{ .SiteURL }}/auth/accept-invite?token={{ .Token }}</p>
-```
+### 1. Configure Environment Variables
 
-### Reset Password
-```html
-<h2>Reset your password</h2>
-<p>{{ .SiteURL }}/auth/reset-password?token={{ .Token }}</p>
-```
+Go to your Netlify site dashboard:
+1. Navigate to **Site configuration → Environment variables**
+2. Add the following variables:
 
-## 6. Auth Settings
+| Variable | Value | Notes |
+|----------|-------|-------|
+| NEXT_PUBLIC_FEATURE_AUTH | on | Enables auth UI |
+| NEXT_PUBLIC_SUPABASE_URL | https://your-project.supabase.co | Your Supabase project URL |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | your-anon-key | Safe for browser |
+| SUPABASE_SERVICE_ROLE_KEY | your-service-role-key | SECRET - mark as sensitive |
 
-In Supabase Dashboard → **Authentication** → **Settings**:
-- Enable Email auth
-- Disable Email confirmations (for faster testing)
-- Add your domain to **Redirect URLs**: `https://your-domain.netlify.app/**`
+### 2. Deploy
 
-## 7. Next Steps
+After adding environment variables:
+1. Go to **Deploys** tab
+2. Click **Trigger deploy → Clear cache and deploy**
+3. Wait for the build to complete
 
-1. Install Supabase client: `npm install @supabase/supabase-js @supabase/auth-helpers-nextjs`
-2. Add credentials to `.env.local`
-3. Test connection with sample code
-4. Implement auth pages
+### 3. Verify
+
+Visit your deployed site - /auth/sign-in should load without errors.
+
+## Troubleshooting
+
+### Build Error: "Module not found @/lib/supabase/client"
+
+**Fix:** Ensure apps/atelier/tsconfig.json has correct paths configuration.
+
+### Runtime Error: "Missing Supabase environment variables"
+
+**Fix:** Verify all NEXT_PUBLIC_SUPABASE_* variables are set in Netlify and redeploy.
+
+## Security Notes
+
+⚠️ **IMPORTANT:**
+1. Never commit .env.local files to git
+2. SUPABASE_SERVICE_ROLE_KEY must be kept secret
+3. Use Row Level Security (RLS) policies in Supabase
+

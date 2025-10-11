@@ -36,12 +36,12 @@ export default function Navigation() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const supabase = createClient()
   const authEnabled = process.env.NEXT_PUBLIC_FEATURE_AUTH === 'on'
 
   useEffect(() => {
     if (authEnabled) {
-      loadUser()
+      const supabase = createClient()
+      loadUser(supabase)
 
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         setUser(session?.user ?? null)
@@ -51,14 +51,17 @@ export default function Navigation() {
     }
   }, [authEnabled])
 
-  const loadUser = async () => {
+  const loadUser = async (supabase: ReturnType<typeof createClient>) => {
     const { data: { user } } = await supabase.auth.getUser()
     setUser(user)
   }
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/auth/sign-in')
+    if (authEnabled) {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+      router.push('/auth/sign-in')
+    }
   }
 
   return (
