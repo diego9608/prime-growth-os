@@ -20,9 +20,9 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./app/*"],
+      "@/*": ["./*"],
       "@/components/*": ["./app/components/*"],
-      "@/lib/*": ["./app/lib/*"],
+      "@/lib/*": ["./lib/*"],
       "@prime-growth-os/types": ["../../packages/types/index.ts"],
       "@prime-growth-os/engine": ["../../packages/engine/index.ts"]
     }
