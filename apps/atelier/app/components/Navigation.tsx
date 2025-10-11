@@ -2,6 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { User } from '@supabase/supabase-js'
 import {
   LayoutDashboard,
   Users,
@@ -11,7 +15,9 @@ import {
   DollarSign,
   FileText,
   Building2,
-  Brain
+  Brain,
+  Settings,
+  LogOut
 } from 'lucide-react'
 
 const navigation = [
@@ -27,22 +33,49 @@ const navigation = [
 
 export default function Navigation() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const supabase = createClient()
+  const authEnabled = process.env.NEXT_PUBLIC_FEATURE_AUTH === 'on'
+
+  useEffect(() => {
+    if (authEnabled) {
+      loadUser()
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null)
+      })
+
+      return () => subscription.unsubscribe()
+    }
+  }, [authEnabled])
+
+  const loadUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    setUser(user)
+  }
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/sign-in')
+  }
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-dark-surface shadow-card border-b border-dark-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
             <div className="flex-shrink-0 flex items-center">
-              <Building2 className="h-8 w-8 text-primary-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Atelier</span>
+              <Building2 className="h-8 w-8 text-gold-500" />
+              <span className="ml-2 text-xl font-bold text-text-primary">Atelier</span>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="flex items-baseline space-x-4">
               {navigation.map((item) => {
                 const isActive = pathname === item.href
                 const Icon = item.icon
@@ -59,13 +92,52 @@ export default function Navigation() {
                 )
               })}
             </div>
+
+            {/* User Menu */}
+            {authEnabled && user && (
+              <div className="relative ml-4">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 text-text-secondary hover:text-text-primary px-3 py-2 rounded-md"
+                >
+                  <div className="h-8 w-8 rounded-full bg-gold-500/20 border border-gold-500/30 flex items-center justify-center">
+                    <span className="text-sm font-medium text-gold-500">
+                      {user.email?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-dark-elevated rounded-lg shadow-card border border-dark-border py-1 z-50">
+                    <div className="px-4 py-2 text-sm text-text-secondary border-b border-dark-border">
+                      {user.email}
+                    </div>
+                    <Link
+                      href="/settings/members"
+                      className="flex items-center px-4 py-2 text-sm text-text-primary hover:bg-dark-surface"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Configuración
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center w-full px-4 py-2 text-sm text-text-primary hover:bg-dark-surface"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Cerrar sesión
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               type="button"
-              className="bg-gray-50 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              className="bg-dark-surface p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-dark-elevated focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gold-500"
             >
               <span className="sr-only">Abrir menú principal</span>
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,7 +150,7 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       <div className="md:hidden">
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-dark-surface border-t border-dark-border">
           {navigation.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon

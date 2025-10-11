@@ -1,3 +1,6 @@
+// Validate environment variables at build time
+import './lib/env-validator.js'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // SSR configuration - NO output: 'export'

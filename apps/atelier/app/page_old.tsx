@@ -3,6 +3,7 @@ import { optimizeSpend } from '@prime-growth-os/engine'
 import KPICard from './components/KPICard'
 import { BarChart3, Target, Zap, AlertCircle } from 'lucide-react'
 
+// Mock data for KPIs
 const kpis: KPI[] = [
   {
     id: 'speed-to-lead',
@@ -83,6 +84,7 @@ const kpis: KPI[] = [
   }
 ]
 
+// Mock data for spend optimization
 const optimizationData = optimizeSpend({
   channels: ['Google Ads', 'Facebook Ads', 'LinkedIn Ads', 'SEO Orgánico', 'Email Marketing', 'Referidos'],
   budgets: [15000, 12000, 8000, 5000, 3000, 7000],
@@ -100,6 +102,7 @@ const optimizationData = optimizeSpend({
 export default function Dashboard() {
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div className="card">
         <div className="flex items-center justify-between">
           <div>
@@ -126,6 +129,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* KPI Grid */}
       <div>
         <h2 className="section-title">Indicadores Clave de Rendimiento</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -135,34 +139,36 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="card">
+      {/* Spend Optimization Panel */}
+      <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
         <div className="flex items-center space-x-3 mb-6">
-          <Target className="h-6 w-6 text-gold-500" />
-          <h2 className="text-xl font-semibold text-text-primary">Optimización de Inversión en Canales</h2>
+          <Target className="h-6 w-6 text-primary-600" />
+          <h2 className="text-xl font-semibold text-gray-900">Optimización de Inversión en Canales</h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Recommendations Chart */}
           <div>
-            <h3 className="text-lg font-medium text-text-primary mb-4">Asignación Recomendada</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Asignación Recomendada</h3>
             <div className="space-y-4">
-              {optimizationData.map((channel) => (
-                <div key={channel.channel} className="flex items-center justify-between p-4 bg-dark-surface rounded-lg border border-dark-border">
+              {optimizationData.map((channel, index) => (
+                <div key={channel.channel} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-text-primary">{channel.channel}</span>
-                      <span className="text-sm text-text-secondary">
+                      <span className="font-medium text-gray-900">{channel.channel}</span>
+                      <span className="text-sm text-gray-600">
                         ${channel.recommended_budget.toLocaleString('es-MX')}
                       </span>
                     </div>
-                    <div className="w-full bg-dark-base rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-gradient-gold h-2 rounded-full"
+                        className="bg-primary-500 h-2 rounded-full"
                         style={{
                           width: `${(channel.recommended_budget / Math.max(...optimizationData.map(c => c.recommended_budget))) * 100}%`
                         }}
                       ></div>
                     </div>
-                    <div className="flex justify-between text-xs text-text-tertiary mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
                       <span>{channel.expected_leads} leads esperados</span>
                       <span>Eficiencia: {channel.efficiency_score}</span>
                     </div>
@@ -172,64 +178,65 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Key Metrics */}
           <div>
-            <h3 className="text-lg font-medium text-text-primary mb-4">Métricas Proyectadas</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Métricas Proyectadas</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-cyan-500/10 p-4 rounded-lg border border-cyan-500/20">
+              <div className="bg-primary-50 p-4 rounded-lg border border-primary-200">
                 <div className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5 text-cyan-500" />
-                  <span className="text-sm font-medium text-text-primary">Total Leads</span>
+                  <BarChart3 className="h-5 w-5 text-primary-600" />
+                  <span className="text-sm font-medium text-primary-900">Total Leads</span>
                 </div>
-                <p className="text-2xl font-bold text-cyan-500 mt-2">
+                <p className="text-2xl font-bold text-primary-900 mt-2">
                   {optimizationData.reduce((sum, channel) => sum + channel.expected_leads, 0)}
                 </p>
-                <p className="text-xs text-text-secondary">
+                <p className="text-xs text-primary-700">
                   +{Math.round(((optimizationData.reduce((sum, channel) => sum + channel.expected_leads, 0) / 38) - 1) * 100)}% vs mes anterior
                 </p>
               </div>
 
-              <div className="bg-success-500/10 p-4 rounded-lg border border-success-500/20">
+              <div className="bg-success-50 p-4 rounded-lg border border-success-200">
                 <div className="flex items-center space-x-2">
-                  <Zap className="h-5 w-5 text-success-500" />
-                  <span className="text-sm font-medium text-text-primary">CPL Promedio</span>
+                  <Zap className="h-5 w-5 text-success-600" />
+                  <span className="text-sm font-medium text-success-900">CPL Promedio</span>
                 </div>
-                <p className="text-2xl font-bold text-success-500 mt-2">
+                <p className="text-2xl font-bold text-success-900 mt-2">
                   ${Math.round(optimizationData.reduce((sum, channel) => sum + (channel.recommended_budget / channel.expected_leads), 0) / optimizationData.length).toLocaleString('es-MX')}
                 </p>
-                <p className="text-xs text-text-secondary">
+                <p className="text-xs text-success-700">
                   -8% vs objetivo actual
                 </p>
               </div>
 
-              <div className="bg-warning-500/10 p-4 rounded-lg border border-warning-500/20">
+              <div className="bg-warning-50 p-4 rounded-lg border border-warning-200">
                 <div className="flex items-center space-x-2">
-                  <AlertCircle className="h-5 w-5 text-warning-500" />
-                  <span className="text-sm font-medium text-text-primary">Confianza</span>
+                  <AlertCircle className="h-5 w-5 text-warning-600" />
+                  <span className="text-sm font-medium text-warning-900">Confianza</span>
                 </div>
-                <p className="text-2xl font-bold text-warning-500 mt-2">
+                <p className="text-2xl font-bold text-warning-900 mt-2">
                   {Math.round(optimizationData.reduce((sum, channel) => sum + channel.confidence, 0) / optimizationData.length * 100)}%
                 </p>
-                <p className="text-xs text-text-secondary">
+                <p className="text-xs text-warning-700">
                   Basado en datos históricos
                 </p>
               </div>
 
-              <div className="bg-dark-surface p-4 rounded-lg border border-dark-border">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-text-primary">Inversión Total</span>
+                  <span className="text-sm font-medium text-gray-900">Inversión Total</span>
                 </div>
-                <p className="text-2xl font-bold text-gold-500 mt-2">
+                <p className="text-2xl font-bold text-gray-900 mt-2">
                   ${optimizationData.reduce((sum, channel) => sum + channel.recommended_budget, 0).toLocaleString('es-MX')}
                 </p>
-                <p className="text-xs text-text-secondary">
+                <p className="text-xs text-gray-700">
                   Presupuesto mensual recomendado
                 </p>
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-violet-500/10 rounded-lg border border-violet-500/20">
-              <h4 className="font-medium text-text-primary mb-2">Recomendaciones Clave</h4>
-              <ul className="text-sm text-text-secondary space-y-1">
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-medium text-blue-900 mb-2">Recomendaciones Clave</h4>
+              <ul className="text-sm text-blue-800 space-y-1">
                 <li>• Incrementar inversión en LinkedIn Ads (+40% efficiency)</li>
                 <li>• Optimizar SEO orgánico para mejor cost per lead</li>
                 <li>• Reforzar programa de referidos con incentivos</li>
@@ -240,8 +247,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="card">
-        <h2 className="text-xl font-semibold text-text-primary mb-4">Acciones Rápidas</h2>
+      {/* Quick Actions */}
+      <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Acciones Rápidas</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button className="btn-primary justify-start text-left p-4 h-auto">
             <div>

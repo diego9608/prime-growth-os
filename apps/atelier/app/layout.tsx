@@ -3,6 +3,11 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Navigation from './components/Navigation'
 
+// Validate environment variables
+if (typeof window === 'undefined') {
+  import('../lib/env-validator').then(m => m.validateEnv())
+}
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -25,10 +30,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-dark-base">
           <Navigation />
-          <main className="py-6 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+          <main className="py-6">
+            <div className="page-container">
               {children}
             </div>
           </main>
