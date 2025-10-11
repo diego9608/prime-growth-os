@@ -180,13 +180,20 @@ const nextConfig = {
 
 #### Configuración inicial de Git:
 ```bash
-# Configurar usuario para commits (usar tu username de GitHub)
-git config --global user.name "diego9608"
-git config --global user.email "tu-email@ejemplo.com"
+# PRIMERO verificar si ya está configurado:
+git config --global user.name
+git config --global user.email
 
-# Inicializar repositorio y conectar con GitHub
+# Si NO está configurado o necesitas cambiarlo:
+git config --global user.name "diego9608"
+git config --global user.email "diego.villarreal.j@gmail.com"
+
+# Para nuevo proyecto, solo inicializar y conectar:
 git init
 git remote add origin https://github.com/diego9608/[nombre-repo].git
+
+# Si el repo ya existe en GitHub, clonar directamente:
+git clone https://github.com/diego9608/[nombre-repo].git
 ```
 
 #### Formato de Commits (OBLIGATORIO):
