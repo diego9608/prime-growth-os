@@ -33,23 +33,31 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-dark-base py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Inicia sesión en tu cuenta
+        <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <div className="w-20 h-20 rounded-full bg-gradient-gold flex items-center justify-center shadow-glow-gold">
+              <span className="text-3xl font-bold text-dark-base">C</span>
+            </div>
+          </div>
+          <h2 className="text-3xl font-extrabold text-text-primary">
+            Bienvenido a Cuarzo
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            O{' '}
-            <Link href="/auth/sign-up" className="font-medium text-blue-600 hover:text-blue-500">
-              crea una nueva cuenta
+          <p className="mt-2 text-sm text-text-secondary">
+            Inicia sesión para continuar
+          </p>
+          <p className="mt-4 text-center text-sm text-text-secondary">
+            ¿No tienes cuenta?{' '}
+            <Link href="/auth/sign-up" className="font-medium text-gold-500 hover:text-gold-400">
+              Regístrate aquí
             </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSignIn}>
-          <div className="rounded-md shadow-sm -space-y-px">
+          <div className="space-y-4">
             <div>
-              <label htmlFor="email-address" className="sr-only">
+              <label htmlFor="email-address" className="block text-sm font-medium text-text-secondary mb-1.5">
                 Email
               </label>
               <input
@@ -58,14 +66,14 @@ export default function SignInPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email"
+                className="w-full px-4 py-3 bg-dark-surface border border-dark-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500 transition-all"
+                placeholder="tu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-1.5">
                 Contraseña
               </label>
               <input
@@ -74,36 +82,38 @@ export default function SignInPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Contraseña"
+                className="w-full px-4 py-3 bg-dark-surface border border-dark-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500 transition-all"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <Link href="/auth/reset" className="font-medium text-blue-600 hover:text-blue-500">
-                ¿Olvidaste tu contraseña?
-              </Link>
-            </div>
+          <div className="flex items-center justify-end">
+            <Link href="/auth/reset" className="text-sm font-medium text-gold-500 hover:text-gold-400">
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-800">{error}</div>
+            <div className="rounded-lg bg-danger-500/10 border border-danger-500/20 p-4">
+              <div className="text-sm text-danger-500">{error}</div>
             </div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
-            >
-              {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-            </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex justify-center py-3 px-4 bg-gradient-gold text-dark-base font-semibold rounded-lg shadow-glow-gold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 focus:ring-offset-dark-base disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+          </button>
+
+          <div className="text-center pt-4 border-t border-dark-border">
+            <p className="text-xs text-text-tertiary">
+              Powered by <span className="text-gold-500 font-medium">Alear OS</span>
+            </p>
           </div>
         </form>
       </div>

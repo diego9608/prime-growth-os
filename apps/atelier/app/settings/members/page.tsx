@@ -202,142 +202,140 @@ export default function MembersPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="text-gray-500">Cargando...</div>
+        <div className="text-text-secondary">Cargando...</div>
       </div>
     )
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <div className="px-4 py-6 sm:px-0">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Miembros del Equipo</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            Gestiona los miembros de tu organización y sus permisos
-          </p>
+    <div className="page-container">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-text-primary">Miembros del Equipo</h1>
+        <p className="mt-2 text-sm text-text-secondary">
+          Gestiona los miembros de tu organización y sus permisos
+        </p>
+      </div>
+
+      {error && (
+        <div className="mb-4 rounded-lg bg-danger-500/10 border border-danger-500/20 p-4">
+          <div className="text-sm text-danger-500">{error}</div>
         </div>
+      )}
 
-        {error && (
-          <div className="mb-4 rounded-md bg-red-50 p-4">
-            <div className="text-sm text-red-800">{error}</div>
-          </div>
-        )}
+      {success && (
+        <div className="mb-4 rounded-lg bg-success-500/10 border border-success-500/20 p-4">
+          <div className="text-sm text-success-500">{success}</div>
+        </div>
+      )}
 
-        {success && (
-          <div className="mb-4 rounded-md bg-green-50 p-4">
-            <div className="text-sm text-green-800">{success}</div>
-          </div>
-        )}
+      {/* Invite Form */}
+      {canManageMembers && (
+        <div className="card mb-6">
+          <h2 className="text-lg font-medium text-text-primary mb-4">Invitar nuevo miembro</h2>
+          <form onSubmit={handleInvite} className="flex gap-4">
+            <input
+              type="email"
+              placeholder="email@ejemplo.com"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              required
+              className="flex-1 px-4 py-2 bg-dark-surface border border-dark-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500"
+            />
+            <select
+              value={inviteRole}
+              onChange={(e) => setInviteRole(e.target.value as 'admin' | 'editor' | 'viewer')}
+              className="px-4 py-2 bg-dark-surface border border-dark-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500"
+            >
+              <option value="viewer">Viewer</option>
+              <option value="editor">Editor</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button
+              type="submit"
+              disabled={inviting}
+              className="btn-primary"
+            >
+              {inviting ? 'Enviando...' : 'Invitar'}
+            </button>
+          </form>
+        </div>
+      )}
 
-        {/* Invite Form */}
-        {canManageMembers && (
-          <div className="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Invitar nuevo miembro</h2>
-            <form onSubmit={handleInvite} className="flex gap-4">
-              <input
-                type="email"
-                placeholder="email@ejemplo.com"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                required
-                className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-              />
-              <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as 'admin' | 'editor' | 'viewer')}
-                className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-              >
-                <option value="viewer">Viewer</option>
-                <option value="editor">Editor</option>
-                <option value="admin">Admin</option>
-              </select>
-              <button
-                type="submit"
-                disabled={inviting}
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
-              >
-                {inviting ? 'Enviando...' : 'Invitar'}
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* Members List */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <ul className="divide-y divide-gray-200">
-            {members.map((member) => (
-              <li key={member.id} className="px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                        <span className="text-gray-600 font-medium">
-                          {member.email?.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {member.email || 'Email no disponible'}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Rol: {member.role}
-                      </div>
+      {/* Members List */}
+      <div className="card overflow-hidden p-0">
+        <ul className="divide-y divide-dark-border">
+          {members.map((member) => (
+            <li key={member.id} className="px-6 py-4 hover:bg-dark-surface/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-gold-500/20 border border-gold-500/30 flex items-center justify-center">
+                      <span className="text-gold-500 font-medium">
+                        {member.email?.charAt(0).toUpperCase()}
+                      </span>
                     </div>
                   </div>
-
-                  {canManageMembers && member.user_id !== currentUser?.id && (
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={member.role}
-                        onChange={(e) => handleRoleChange(member.id, e.target.value)}
-                        className="rounded-md border-gray-300 text-sm"
-                        disabled={member.role === 'owner'}
-                      >
-                        <option value="owner" disabled>Owner</option>
-                        <option value="admin">Admin</option>
-                        <option value="editor">Editor</option>
-                        <option value="viewer">Viewer</option>
-                      </select>
-
-                      {member.role !== 'owner' && (
-                        <button
-                          onClick={() => handleRemoveMember(member.id)}
-                          className="text-red-600 hover:text-red-900 text-sm"
-                        >
-                          Eliminar
-                        </button>
-                      )}
+                  <div className="ml-4">
+                    <div className="text-sm font-medium text-text-primary">
+                      {member.email || 'Email no disponible'}
                     </div>
-                  )}
+                    <div className="text-sm text-text-secondary">
+                      Rol: <span className="text-gold-500">{member.role}</span>
+                    </div>
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
 
-        {/* Role Descriptions */}
-        <div className="mt-8 bg-gray-50 rounded-lg p-6">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">Descripción de roles</h3>
-          <dl className="space-y-2 text-sm">
-            <div>
-              <dt className="inline font-medium text-gray-700">Owner:</dt>
-              <dd className="inline ml-2 text-gray-600">Control total, puede eliminar la organización</dd>
-            </div>
-            <div>
-              <dt className="inline font-medium text-gray-700">Admin:</dt>
-              <dd className="inline ml-2 text-gray-600">Puede gestionar miembros y todas las funciones</dd>
-            </div>
-            <div>
-              <dt className="inline font-medium text-gray-700">Editor:</dt>
-              <dd className="inline ml-2 text-gray-600">Puede crear y editar contenido</dd>
-            </div>
-            <div>
-              <dt className="inline font-medium text-gray-700">Viewer:</dt>
-              <dd className="inline ml-2 text-gray-600">Solo puede ver contenido</dd>
-            </div>
-          </dl>
-        </div>
+                {canManageMembers && member.user_id !== currentUser?.id && (
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={member.role}
+                      onChange={(e) => handleRoleChange(member.id, e.target.value)}
+                      className="px-3 py-1.5 bg-dark-surface border border-dark-border rounded-lg text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/50"
+                      disabled={member.role === 'owner'}
+                    >
+                      <option value="owner" disabled>Owner</option>
+                      <option value="admin">Admin</option>
+                      <option value="editor">Editor</option>
+                      <option value="viewer">Viewer</option>
+                    </select>
+
+                    {member.role !== 'owner' && (
+                      <button
+                        onClick={() => handleRemoveMember(member.id)}
+                        className="text-danger-500 hover:text-danger-400 text-sm font-medium"
+                      >
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Role Descriptions */}
+      <div className="mt-8 card bg-dark-surface/50">
+        <h3 className="text-sm font-medium text-text-primary mb-3">Descripción de roles</h3>
+        <dl className="space-y-2 text-sm">
+          <div>
+            <dt className="inline font-medium text-gold-500">Owner:</dt>
+            <dd className="inline ml-2 text-text-secondary">Control total, puede eliminar la organización</dd>
+          </div>
+          <div>
+            <dt className="inline font-medium text-cyan-500">Admin:</dt>
+            <dd className="inline ml-2 text-text-secondary">Puede gestionar miembros y todas las funciones</dd>
+          </div>
+          <div>
+            <dt className="inline font-medium text-violet-500">Editor:</dt>
+            <dd className="inline ml-2 text-text-secondary">Puede crear y editar contenido</dd>
+          </div>
+          <div>
+            <dt className="inline font-medium text-text-primary">Viewer:</dt>
+            <dd className="inline ml-2 text-text-secondary">Solo puede ver contenido</dd>
+          </div>
+        </dl>
       </div>
     </div>
   )

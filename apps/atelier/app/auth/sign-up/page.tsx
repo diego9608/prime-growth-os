@@ -49,17 +49,22 @@ export default function SignUpPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-dark-base py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
-          <div className="rounded-md bg-green-50 p-4">
-            <div className="text-sm text-green-800">
-              <h3 className="font-medium mb-2">¡Cuenta creada exitosamente!</h3>
-              <p>Revisa tu email para confirmar tu cuenta antes de iniciar sesión.</p>
+          <div className="rounded-lg bg-success-500/10 border border-success-500/20 p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-text-primary mb-2">¡Cuenta creada exitosamente!</h3>
+              <p className="text-sm text-text-secondary">Revisa tu email para confirmar tu cuenta antes de iniciar sesión.</p>
             </div>
           </div>
           <div className="text-center">
-            <Link href="/auth/sign-in" className="font-medium text-blue-600 hover:text-blue-500">
-              Ir a iniciar sesión
+            <Link href="/auth/sign-in" className="font-medium text-gold-500 hover:text-gold-400">
+              Ir a iniciar sesión →
             </Link>
           </div>
         </div>
@@ -68,23 +73,31 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-dark-base py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Crea una nueva cuenta
+        <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <div className="w-20 h-20 rounded-full bg-gradient-gold flex items-center justify-center shadow-glow-gold">
+              <span className="text-3xl font-bold text-dark-base">C</span>
+            </div>
+          </div>
+          <h2 className="text-3xl font-extrabold text-text-primary">
+            Únete a Cuarzo
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            O{' '}
-            <Link href="/auth/sign-in" className="font-medium text-blue-600 hover:text-blue-500">
-              inicia sesión si ya tienes una cuenta
+          <p className="mt-2 text-sm text-text-secondary">
+            Crea tu cuenta para comenzar
+          </p>
+          <p className="mt-4 text-sm text-text-secondary">
+            ¿Ya tienes cuenta?{' '}
+            <Link href="/auth/sign-in" className="font-medium text-gold-500 hover:text-gold-400">
+              Inicia sesión aquí
             </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSignUp}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-1.5">
                 Email
               </label>
               <input
@@ -93,14 +106,14 @@ export default function SignUpPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 bg-dark-surface border border-dark-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500 transition-all"
                 placeholder="tu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-1.5">
                 Contraseña
               </label>
               <input
@@ -109,14 +122,14 @@ export default function SignUpPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 bg-dark-surface border border-dark-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500 transition-all"
                 placeholder="Mínimo 6 caracteres"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-text-secondary mb-1.5">
                 Confirmar contraseña
               </label>
               <input
@@ -125,7 +138,7 @@ export default function SignUpPage() {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="w-full px-4 py-3 bg-dark-surface border border-dark-border rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-gold-500/50 focus:border-gold-500 transition-all"
                 placeholder="Repite tu contraseña"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -134,19 +147,23 @@ export default function SignUpPage() {
           </div>
 
           {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-800">{error}</div>
+            <div className="rounded-lg bg-danger-500/10 border border-danger-500/20 p-4">
+              <div className="text-sm text-danger-500">{error}</div>
             </div>
           )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
-            >
-              {loading ? 'Creando cuenta...' : 'Crear cuenta'}
-            </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex justify-center py-3 px-4 bg-gradient-gold text-dark-base font-semibold rounded-lg shadow-glow-gold hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 focus:ring-offset-dark-base disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+          </button>
+
+          <div className="text-center pt-4 border-t border-dark-border">
+            <p className="text-xs text-text-tertiary">
+              Powered by <span className="text-gold-500 font-medium">Alear OS</span>
+            </p>
           </div>
         </form>
       </div>
