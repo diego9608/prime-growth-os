@@ -11,7 +11,7 @@ import {
   Activity,
   ChevronRight,
   FileText,
-  Flask,
+  Beaker,
   Shield
 } from 'lucide-react'
 
@@ -144,7 +144,7 @@ export default function StrategyPage() {
               { id: 'overview', label: 'Executive Summary', icon: FileText },
               { id: 'bottlenecks', label: 'Bottlenecks', icon: AlertTriangle },
               { id: 'spend', label: 'Spend Optimization', icon: DollarSign },
-              { id: 'experiments', label: 'Experiments', icon: Flask },
+              { id: 'experiments', label: 'Experiments', icon: Beaker },
               { id: 'forecast', label: 'Forecast', icon: TrendingUp }
             ].map((tab) => {
               const Icon = tab.icon
@@ -261,7 +261,7 @@ export default function StrategyPage() {
                       {mockSGPData.experiments.filter(e => e.status === 'running').length}
                     </p>
                   </div>
-                  <Flask className="h-8 w-8 text-purple-500" />
+                  <Beaker className="h-8 w-8 text-purple-500" />
                 </div>
               </div>
             </div>
