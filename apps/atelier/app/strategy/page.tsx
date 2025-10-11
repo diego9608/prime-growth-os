@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
   TrendingUp,
   AlertTriangle,
@@ -8,10 +8,9 @@ import {
   Target,
   Brain,
   DollarSign,
-  Activity,
   ChevronRight,
   FileText,
-  Beaker,
+  TestTube,
   Shield
 } from 'lucide-react'
 
@@ -144,7 +143,7 @@ export default function StrategyPage() {
               { id: 'overview', label: 'Executive Summary', icon: FileText },
               { id: 'bottlenecks', label: 'Bottlenecks', icon: AlertTriangle },
               { id: 'spend', label: 'Spend Optimization', icon: DollarSign },
-              { id: 'experiments', label: 'Experiments', icon: Beaker },
+              { id: 'experiments', label: 'Experiments', icon: TestTube },
               { id: 'forecast', label: 'Forecast', icon: TrendingUp }
             ].map((tab) => {
               const Icon = tab.icon
@@ -261,7 +260,7 @@ export default function StrategyPage() {
                       {mockSGPData.experiments.filter(e => e.status === 'running').length}
                     </p>
                   </div>
-                  <Beaker className="h-8 w-8 text-purple-500" />
+                  <TestTube className="h-8 w-8 text-purple-500" />
                 </div>
               </div>
             </div>
@@ -340,7 +339,7 @@ export default function StrategyPage() {
 
               <div className="space-y-4">
                 {Object.entries(mockSGPData.spendOptimization.current).map(([channel, currentSpend]) => {
-                  const recommendedSpend = mockSGPData.spendOptimization.recommended[channel]
+                  const recommendedSpend = mockSGPData.spendOptimization.recommended[channel as keyof typeof mockSGPData.spendOptimization.recommended] || 0
                   const change = recommendedSpend - currentSpend
                   const changePercent = (change / currentSpend) * 100
 
