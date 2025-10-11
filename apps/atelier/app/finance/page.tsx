@@ -13,8 +13,10 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Clock,
-  AlertCircle
+  AlertCircle,
+  LineChart
 } from 'lucide-react'
+import ForecastChart from './ForecastChart'
 
 // Mock data for finance metrics
 const mockFinanceMetrics: FinanceMetric[] = [
@@ -123,29 +125,29 @@ export default function FinancePage() {
   const [metrics] = useState<FinanceMetric[]>(mockFinanceMetrics)
   const [cashFlow] = useState<CashFlowItem[]>(mockCashFlow)
   const [selectedPeriod, setSelectedPeriod] = useState('month')
+  const [showForecast, setShowForecast] = useState(false)
 
   const getTrendIcon = (trend: FinanceMetric['trend']) => {
     switch (trend) {
       case 'up':
-        return <TrendingUp className="h-4 w-4 text-green-600" />
+        return <TrendingUp className="h-4 w-4 text-success-500" />
       case 'down':
-        return <TrendingDown className="h-4 w-4 text-red-600" />
+        return <TrendingDown className="h-4 w-4 text-danger-500" />
       default:
-        return <div className="h-4 w-4 bg-gray-400 rounded-full" />
+        return <div className="h-4 w-4 bg-text-tertiary rounded-full" />
     }
   }
 
   const getMetricColor = (value: number, target: number, category: string) => {
     const ratio = value / target
     if (category === 'revenue' || category === 'cash_flow') {
-      if (ratio >= 0.95) return 'text-green-600'
-      if (ratio >= 0.8) return 'text-yellow-600'
-      return 'text-red-600'
+      if (ratio >= 0.95) return 'text-success-500'
+      if (ratio >= 0.8) return 'text-warning-500'
+      return 'text-danger-500'
     } else {
-      // For efficiency metrics, lower might be better
-      if (ratio <= 1.05) return 'text-green-600'
-      if (ratio <= 1.2) return 'text-yellow-600'
-      return 'text-red-600'
+      if (ratio <= 1.05) return 'text-success-500'
+      if (ratio <= 1.2) return 'text-warning-500'
+      return 'text-danger-500'
     }
   }
 
@@ -158,8 +160,8 @@ export default function FinancePage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard Financiero</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-text-primary">Dashboard Financiero</h1>
+          <p className="text-text-secondary mt-2">
             Análisis completo de métricas financieras y flujo de caja
           </p>
         </div>
@@ -167,91 +169,103 @@ export default function FinancePage() {
           <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="py-2 px-3 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+            className="py-2 px-3 bg-dark-surface border border-dark-border rounded-lg text-text-primary focus:ring-gold-500 focus:border-gold-500"
           >
             <option value="week">Esta Semana</option>
             <option value="month">Este Mes</option>
             <option value="quarter">Este Trimestre</option>
             <option value="year">Este Año</option>
           </select>
-          <button className="btn-primary">
+          <button
+            onClick={() => setShowForecast(!showForecast)}
+            className={showForecast ? "btn-primary" : "btn-secondary"}
+          >
+            <LineChart className="h-4 w-4 mr-2" />
+            Forecast
+          </button>
+          <button className="btn-secondary">
             <PieChart className="h-4 w-4 mr-2" />
             Generar Reporte
           </button>
         </div>
       </div>
 
+      {/* Forecast Chart */}
+      {showForecast && <ForecastChart />}
+
       {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
+        <div className="card border-l-4 border-success-500/50">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-green-500 rounded-md flex items-center justify-center">
+              <div className="h-8 w-8 bg-success-500 rounded-md flex items-center justify-center">
                 <ArrowUpRight className="h-4 w-4 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Ingresos</h3>
+              <h3 className="text-lg font-semibold text-text-primary">Ingresos</h3>
             </div>
-            <TrendingUp className="h-5 w-5 text-green-600" />
+            <TrendingUp className="h-5 w-5 text-success-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-text-primary">
               ${totalIncome.toLocaleString('es-MX')}
             </p>
-            <p className="text-sm text-gray-600">+12% vs mes anterior</p>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-500 h-2 rounded-full" style={{ width: '78%' }}></div>
+            <p className="text-sm text-text-secondary">+12% vs mes anterior</p>
+            <div className="w-full bg-dark-surface rounded-full h-2">
+              <div className="bg-success-500 h-2 rounded-full" style={{ width: '78%' }}></div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
+        <div className="card border-l-4 border-danger-500/50">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-red-500 rounded-md flex items-center justify-center">
+              <div className="h-8 w-8 bg-danger-500 rounded-md flex items-center justify-center">
                 <ArrowDownRight className="h-4 w-4 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Gastos</h3>
+              <h3 className="text-lg font-semibold text-text-primary">Gastos</h3>
             </div>
-            <TrendingDown className="h-5 w-5 text-red-600" />
+            <TrendingDown className="h-5 w-5 text-danger-500" />
           </div>
           <div className="space-y-2">
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-3xl font-bold text-text-primary">
               ${totalExpenses.toLocaleString('es-MX')}
             </p>
-            <p className="text-sm text-gray-600">-5% vs mes anterior</p>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-red-500 h-2 rounded-full" style={{ width: '65%' }}></div>
+            <p className="text-sm text-text-secondary">-5% vs mes anterior</p>
+            <div className="w-full bg-dark-surface rounded-full h-2">
+              <div className="bg-danger-500 h-2 rounded-full" style={{ width: '65%' }}></div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
+        <div className={`card border-l-4 ${
+          netCashFlow >= 0 ? 'border-cyan-500/50' : 'border-warning-500/50'
+        }`}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <div className={`h-8 w-8 rounded-md flex items-center justify-center ${
-                netCashFlow >= 0 ? 'bg-blue-500' : 'bg-orange-500'
+                netCashFlow >= 0 ? 'bg-cyan-500' : 'bg-warning-500'
               }`}>
                 <DollarSign className="h-4 w-4 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Flujo Neto</h3>
+              <h3 className="text-lg font-semibold text-text-primary">Flujo Neto</h3>
             </div>
-            {netCashFlow >= 0 ? 
-              <TrendingUp className="h-5 w-5 text-green-600" /> : 
-              <TrendingDown className="h-5 w-5 text-red-600" />
+            {netCashFlow >= 0 ?
+              <TrendingUp className="h-5 w-5 text-success-500" /> :
+              <TrendingDown className="h-5 w-5 text-danger-500" />
             }
           </div>
           <div className="space-y-2">
             <p className={`text-3xl font-bold ${
-              netCashFlow >= 0 ? 'text-gray-900' : 'text-red-600'
+              netCashFlow >= 0 ? 'text-text-primary' : 'text-danger-500'
             }`}>
               ${netCashFlow.toLocaleString('es-MX')}
             </p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-text-secondary">
               {netCashFlow >= 0 ? 'Flujo positivo' : 'Requiere atención'}
             </p>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-dark-surface rounded-full h-2">
               <div className={`h-2 rounded-full ${
-                netCashFlow >= 0 ? 'bg-blue-500' : 'bg-orange-500'
+                netCashFlow >= 0 ? 'bg-cyan-500' : 'bg-warning-500'
               }`} style={{ width: netCashFlow >= 0 ? '85%' : '45%' }}></div>
             </div>
           </div>
@@ -260,12 +274,12 @@ export default function FinancePage() {
 
       {/* Financial Metrics Grid */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Métricas Financieras Detalladas</h2>
+        <h2 className="text-xl font-semibold text-text-primary mb-6">Métricas Financieras Detalladas</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {metrics.map((metric) => (
-            <div key={metric.id} className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
+            <div key={metric.id} className="card">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-900">{metric.name}</h3>
+                <h3 className="text-sm font-medium text-text-primary">{metric.name}</h3>
                 <div className="flex items-center space-x-2">
                   {getTrendIcon(metric.trend)}
                 </div>
@@ -276,36 +290,36 @@ export default function FinancePage() {
                   <span className={`text-2xl font-bold ${
                     getMetricColor(metric.value, metric.target, metric.category)
                   }`}>
-                    {metric.category === 'revenue' || metric.category === 'cash_flow' ? 
-                      `$${metric.value.toLocaleString('es-MX')}` : 
+                    {metric.category === 'revenue' || metric.category === 'cash_flow' ?
+                      `$${metric.value.toLocaleString('es-MX')}` :
                       `${metric.value}%`
                     }
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mt-1">{metric.period}</p>
+                <p className="text-sm text-text-secondary mt-1">{metric.period}</p>
               </div>
 
               <div className="mb-4">
-                <div className="flex justify-between text-xs text-gray-600 mb-1">
+                <div className="flex justify-between text-xs text-text-secondary mb-1">
                   <span>Objetivo</span>
                   <span>
                     {Math.round((metric.value / metric.target) * 100)}% alcanzado
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-dark-surface rounded-full h-2">
                   <div
                     className={`h-2 rounded-full transition-all duration-300 ${
-                      metric.value >= metric.target ? 'bg-green-500' : 
-                      metric.value >= metric.target * 0.8 ? 'bg-yellow-500' : 'bg-red-500'
+                      metric.value >= metric.target ? 'bg-success-500' :
+                      metric.value >= metric.target * 0.8 ? 'bg-warning-500' : 'bg-danger-500'
                     }`}
                     style={{ width: `${Math.min(100, (metric.value / metric.target) * 100)}%` }}
                   ></div>
                 </div>
               </div>
 
-              <div className="text-xs text-gray-500">
-                Meta: {metric.category === 'revenue' || metric.category === 'cash_flow' ? 
-                  `$${metric.target.toLocaleString('es-MX')}` : 
+              <div className="text-xs text-text-tertiary">
+                Meta: {metric.category === 'revenue' || metric.category === 'cash_flow' ?
+                  `$${metric.target.toLocaleString('es-MX')}` :
                   `${metric.target}%`
                 }
               </div>
@@ -315,55 +329,55 @@ export default function FinancePage() {
       </div>
 
       {/* Cash Flow Table */}
-      <div className="bg-white rounded-lg shadow-card border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <div className="card overflow-hidden p-0">
+        <div className="px-6 py-4 border-b border-dark-border">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Flujo de Caja Reciente</h2>
+            <h2 className="text-xl font-semibold text-text-primary">Flujo de Caja Reciente</h2>
             <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-600">Últimos 7 días</span>
+              <Clock className="h-4 w-4 text-text-tertiary" />
+              <span className="text-sm text-text-secondary">Últimos 7 días</span>
             </div>
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-dark-border">
             <thead>
-              <tr className="table-header">
-                <th className="px-6 py-3 text-left">Fecha</th>
-                <th className="px-6 py-3 text-left">Descripción</th>
-                <th className="px-6 py-3 text-left">Categoría</th>
-                <th className="px-6 py-3 text-left">Tipo</th>
-                <th className="px-6 py-3 text-right">Monto</th>
+              <tr className="bg-dark-surface">
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Fecha</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Descripción</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Categoría</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Tipo</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Monto</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-dark-border">
               {cashFlow.map((item) => (
-                <tr key={item.id} className="table-row">
+                <tr key={item.id} className="hover:bg-dark-surface/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-text-primary">
                       {new Date(item.date).toLocaleDateString('es-MX')}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{item.description}</div>
+                    <div className="text-sm font-medium text-text-primary">{item.description}</div>
                     {item.projectId && (
-                      <div className="text-xs text-gray-500">Proyecto: {item.projectId}</div>
+                      <div className="text-xs text-text-tertiary">Proyecto: {item.projectId}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="badge bg-gray-100 text-gray-800">
+                    <span className="px-2 py-1 text-xs font-medium rounded-full bg-violet-500/10 text-violet-500">
                       {item.category}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {item.type === 'income' ? (
-                        <ArrowUpRight className="h-4 w-4 text-green-600 mr-1" />
+                        <ArrowUpRight className="h-4 w-4 text-success-500 mr-1" />
                       ) : (
-                        <ArrowDownRight className="h-4 w-4 text-red-600 mr-1" />
+                        <ArrowDownRight className="h-4 w-4 text-danger-500 mr-1" />
                       )}
                       <span className={`text-sm font-medium ${
-                        item.type === 'income' ? 'text-green-600' : 'text-red-600'
+                        item.type === 'income' ? 'text-success-500' : 'text-danger-500'
                       }`}>
                         {item.type === 'income' ? 'Ingreso' : 'Gasto'}
                       </span>
@@ -371,7 +385,7 @@ export default function FinancePage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <span className={`text-sm font-medium ${
-                      item.type === 'income' ? 'text-green-600' : 'text-red-600'
+                      item.type === 'income' ? 'text-success-500' : 'text-danger-500'
                     }`}>
                       {item.type === 'income' ? '+' : '-'}${Math.abs(item.amount).toLocaleString('es-MX')}
                     </span>
@@ -384,34 +398,34 @@ export default function FinancePage() {
       </div>
 
       {/* Financial Alerts */}
-      <div className="bg-white rounded-lg shadow-card border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Alertas Financieras</h2>
+      <div className="card">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Alertas Financieras</h2>
         <div className="space-y-4">
-          <div className="flex items-start space-x-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
+          <div className="flex items-start space-x-3 p-4 bg-warning-500/10 border border-warning-500/20 rounded-lg">
+            <AlertCircle className="h-5 w-5 text-warning-500 mt-0.5" />
             <div>
-              <h4 className="text-sm font-medium text-yellow-800">DSO Elevado</h4>
-              <p className="text-sm text-yellow-700">
+              <h4 className="text-sm font-medium text-text-primary">DSO Elevado</h4>
+              <p className="text-sm text-text-secondary">
                 Los días de cobranza están por encima del objetivo. Revisar cuentas por cobrar pendientes.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+          <div className="flex items-start space-x-3 p-4 bg-danger-500/10 border border-danger-500/20 rounded-lg">
+            <AlertCircle className="h-5 w-5 text-danger-500 mt-0.5" />
             <div>
-              <h4 className="text-sm font-medium text-red-800">Margen Bajo Objetivo</h4>
-              <p className="text-sm text-red-700">
+              <h4 className="text-sm font-medium text-text-primary">Margen Bajo Objetivo</h4>
+              <p className="text-sm text-text-secondary">
                 El margen bruto está 7 puntos porcentuales por debajo del objetivo. Revisar costos de proyectos.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <DollarSign className="h-5 w-5 text-blue-600 mt-0.5" />
+          <div className="flex items-start space-x-3 p-4 bg-cyan-500/10 border border-cyan-500/20 rounded-lg">
+            <DollarSign className="h-5 w-5 text-cyan-500 mt-0.5" />
             <div>
-              <h4 className="text-sm font-medium text-blue-800">Oportunidad de Inversión</h4>
-              <p className="text-sm text-blue-700">
+              <h4 className="text-sm font-medium text-text-primary">Oportunidad de Inversión</h4>
+              <p className="text-sm text-text-secondary">
                 Flujo de caja positivo permite considerar inversiones en nuevas tecnologías o expansión.
               </p>
             </div>
