@@ -152,7 +152,74 @@ const nextConfig = {
 }
 ```
 
-### 5. Checklist de Deployment
+### 5. Configuración de Git y Formato de Commits
+
+#### Configuración inicial de Git:
+```bash
+# Configurar usuario para commits (usar tu username de GitHub)
+git config --global user.name "diego9608"
+git config --global user.email "tu-email@ejemplo.com"
+
+# Inicializar repositorio y conectar con GitHub
+git init
+git remote add origin https://github.com/diego9608/[nombre-repo].git
+```
+
+#### Formato de Commits (OBLIGATORIO):
+
+**NUNCA usar:**
+- ❌ Co-authored-by: Claude
+- ❌ 🤖 Generated with Claude Code
+- ❌ Referencias a AI o asistentes
+
+**SIEMPRE usar este formato:**
+
+Para features nuevas:
+```bash
+git commit -m "feat: implement responsive onboarding progress bar" -m "
+- What: Created animated progress bar component with step indicators and percentage display
+- Why: Users need visual feedback of their progress through the 3-step onboarding flow to reduce abandonment
+- How: Used Framer Motion for smooth width animations, CSS gradients for visual appeal, and responsive design for mobile compatibility
+"
+```
+
+Para fixes:
+```bash
+git commit -m "fix: resolve Tailwind CSS purging issue in production" -m "
+- What: Fixed missing styles in production build due to incorrect content paths
+- Why: Site appeared unstyled after deployment causing poor user experience
+- How: Updated tailwind.config.ts with correct relative paths for monorepo structure
+"
+```
+
+Para refactoring:
+```bash
+git commit -m "refactor: optimize analytics provider for SSG compatibility" -m "
+- What: Modified useAnalytics hook to return no-ops during static generation
+- Why: Prevented build failures while maintaining full client-side functionality
+- How: Added null check with fallback to no-op functions instead of throwing errors
+"
+```
+
+#### Tipos de commit permitidos:
+- `feat:` Nueva funcionalidad
+- `fix:` Corrección de bug
+- `refactor:` Refactorización de código
+- `perf:` Mejoras de performance
+- `style:` Cambios de formato/estilo (no CSS)
+- `docs:` Documentación
+- `test:` Añadir o corregir tests
+- `chore:` Mantenimiento, dependencias, etc.
+- `build:` Cambios en build/deployment
+
+#### Estructura del mensaje detallado:
+```
+- What: [Qué se hizo específicamente]
+- Why: [Por qué era necesario/valor de negocio]
+- How: [Detalles técnicos de implementación]
+```
+
+### 6. Checklist de Deployment
 
 #### Pre-deployment:
 - [ ] ¿package-lock.json está commiteado?
@@ -175,7 +242,7 @@ const nextConfig = {
 - [ ] Verificar que no haya warnings de Tailwind sobre node_modules
 - [ ] Verificar que las rutas funcionen correctamente
 
-### 6. Comandos de Build Probados
+### 7. Comandos de Build Probados
 
 #### Monorepo con workspace (RECOMENDADO):
 ```bash
@@ -187,20 +254,20 @@ cd ../.. && npm install && npm -w apps/[app] install && cd apps/[app] && mkdir -
 cd ../.. && npm install && cd apps/[app] && npm run build
 ```
 
-### 7. Debugging Tips
+### 8. Debugging Tips
 
 1. **Ver logs completos**: Los logs de Netlify se truncan en la UI, usar el link de "View complete log"
 2. **Cache issues**: Siempre intentar "Clear cache and deploy" primero
 3. **Verificar build local**: `npm run build` debe funcionar localmente antes de deployar
 4. **Revisar package.json scripts**: Asegurar que `build` esté definido correctamente
 
-### 8. Performance Tips
+### 9. Performance Tips
 
 1. **Tailwind**: Ser específico en content paths para evitar escanear node_modules
 2. **Next.js Cache**: Se guarda automáticamente entre builds en Netlify
 3. **Dependencies**: Usar versiones exactas en producción para evitar sorpresas
 
-### 9. Errores que NO debes cometer
+### 10. Errores que NO debes cometer
 
 1. ❌ NO uses `../../packages/**/*` en Tailwind (incluye node_modules)
 2. ❌ NO olvides commitear package-lock.json
@@ -210,7 +277,7 @@ cd ../.. && npm install && cd apps/[app] && npm run build
 6. ❌ NO uses viewport en metadata, expórtalo por separado
 7. ❌ NO uses versiones incompatibles de eslint-config-next con Next.js
 
-### 10. Template de Resolución de Problemas
+### 11. Template de Resolución de Problemas
 
 Cuando algo falla:
 1. Leer el error específico en los logs
