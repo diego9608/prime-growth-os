@@ -1,0 +1,11 @@
+# Root Netlify configuration for monorepo
+# This file helps Netlify understand the monorepo structure
+
+[build]
+  # Don't build from root - let individual apps handle their builds
+  ignore = "true"
+
+# Site-specific configurations are in:
+# - apps/atelier/netlify.toml
+# - apps/cuarzo/netlify.toml
+# - apps/web/netlify.toml
