@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
+import { AuthGuard } from '@/app/components/AuthGuard'
 
 type Member = {
   id: string
@@ -13,7 +14,7 @@ type Member = {
   created_at: string
 }
 
-export default function MembersPage() {
+function MembersContent() {
   const [members, setMembers] = useState<Member[]>([])
   const [loading, setLoading] = useState(true)
   const [inviteEmail, setInviteEmail] = useState('')
@@ -136,7 +137,7 @@ export default function MembersPage() {
         .single()
 
       // Send invitation through API
-      const response = await fetch('/api/email/send-invitation', {
+      const response = await fetch('/api/members/invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -338,5 +339,13 @@ export default function MembersPage() {
         </dl>
       </div>
     </div>
+  )
+}
+
+export default function MembersPage() {
+  return (
+    <AuthGuard>
+      <MembersContent />
+    </AuthGuard>
   )
 }

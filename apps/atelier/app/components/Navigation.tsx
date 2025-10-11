@@ -17,8 +17,10 @@ import {
   Building2,
   Brain,
   Settings,
-  LogOut
+  LogOut,
+  AlertTriangle
 } from 'lucide-react'
+import { getAuthStatus } from '@/lib/auth-status'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -36,7 +38,9 @@ export default function Navigation() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const authEnabled = process.env.NEXT_PUBLIC_FEATURE_AUTH === 'on'
+  const [showAuthWarning, setShowAuthWarning] = useState(false)
+  const authStatus = getAuthStatus()
+  const authEnabled = authStatus.featureFlag
 
   useEffect(() => {
     if (authEnabled) {
@@ -96,8 +100,46 @@ export default function Navigation() {
               })}
             </div>
 
+            {/* Auth Warning for Admins */}
+            {authEnabled && !authStatus.hasCredentials && (
+              <div className="relative ml-4">
+                <button
+                  onClick={() => setShowAuthWarning(!showAuthWarning)}
+                  className="flex items-center space-x-2 text-warning-500 hover:text-warning-400 px-3 py-2 rounded-md transition-colors"
+                  title="Auth configuration needed"
+                >
+                  <AlertTriangle className="h-5 w-5" />
+                  <span className="text-sm font-medium">Auth</span>
+                </button>
+
+                {showAuthWarning && (
+                  <div className="absolute right-0 mt-2 w-80 bg-dark-elevated rounded-lg shadow-card border border-warning-500/20 p-4 z-50">
+                    <div className="flex items-start gap-2 mb-2">
+                      <AlertTriangle className="h-5 w-5 text-warning-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-sm font-medium text-text-primary mb-1">
+                          Auth no configurado
+                        </h4>
+                        <p className="text-xs text-text-secondary mb-3">
+                          {authStatus.message}
+                        </p>
+                        <a
+                          href="/SUPABASE_SETUP.md"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-gold-500 hover:text-gold-400 font-medium"
+                        >
+                          Ver guía de configuración →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* User Menu */}
-            {authEnabled && user && (
+            {authEnabled && authStatus.hasCredentials && user && (
               <div className="relative ml-4">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
