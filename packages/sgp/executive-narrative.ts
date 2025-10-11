@@ -21,6 +21,51 @@ import type {
 
 export class ExecutiveNarrativeGenerator {
   /**
+   * Generates BLUF (Bottom Line Up Front) executive summary
+   */
+  generateBLUF(params: {
+    primaryRecommendation: Recommendation;
+    expectedImpact: ImpactEstimate;
+    timeframe: number;  // days
+    confidence: number;  // 0-1
+    topRisk?: RiskFactor;
+    evidenceCount: number;
+  }): string {
+    const { primaryRecommendation, expectedImpact, timeframe, confidence, topRisk, evidenceCount } = params;
+
+    // Format impact
+    let impactSummary = '';
+    if (expectedImpact.revenue?.deltaPercent) {
+      impactSummary = `increase revenue ${expectedImpact.revenue.deltaPercent.toFixed(0)}%`;
+    } else if (expectedImpact.margin?.delta) {
+      impactSummary = `improve margin ${expectedImpact.margin.delta.toFixed(1)} percentage points`;
+    } else if (expectedImpact.velocity?.deltaPercent) {
+      impactSummary = `accelerate delivery ${Math.abs(expectedImpact.velocity.deltaPercent).toFixed(0)}%`;
+    } else {
+      impactSummary = 'drive measurable improvement';
+    }
+
+    // Build BLUF
+    const bluf = `
+BOTTOM LINE: ${primaryRecommendation.title} will ${impactSummary} within ${timeframe} days.
+
+ACTION REQUIRED: ${primaryRecommendation.actions[0]?.label || 'Review and approve implementation plan'}
+
+RISK: ${topRisk ? `${topRisk.description} (${topRisk.probability} probability, ${topRisk.impact} impact)` : 'Minimal identified risks'}
+MITIGATION: ${topRisk?.mitigation || 'Standard monitoring and rollback procedures'}
+
+CONFIDENCE: ${(confidence * 100).toFixed(0)}% based on ${evidenceCount} data points
+
+NEXT STEPS:
+1. ${primaryRecommendation.actions[0]?.label || 'Initiate implementation'}
+2. ${primaryRecommendation.actions[1]?.label || 'Set up tracking metrics'}
+3. ${primaryRecommendation.actions[2]?.label || 'Schedule review checkpoint'}
+`.trim();
+
+    return bluf;
+  }
+
+  /**
    * Generates a complete executive narrative from current state
    */
   generateNarrative(params: {
@@ -547,6 +592,262 @@ export class NarrativeTemplates {
       question: 'Should we automate aggressively or improve processes incrementally?',
       answer: 'Launch phased automation starting with highest-impact bottlenecks. Target 30% efficiency gain in 90 days with measured rollout.'
     };
+  }
+}
+
+// ============================================================================
+// EXPORT UTILITIES
+// ============================================================================
+
+export class ExecutiveBriefExporter {
+  /**
+   * Export to Markdown format
+   */
+  static toMarkdown(narrative: ExecutiveNarrative, bluf?: string): string {
+    let markdown = '# Executive Brief\n\n';
+
+    // Add BLUF if provided
+    if (bluf) {
+      markdown += '## BLUF (Bottom Line Up Front)\n\n';
+      markdown += '```\n' + bluf + '\n```\n\n';
+    }
+
+    // Add date
+    markdown += `**Period**: ${narrative.period.start.toLocaleDateString()} - ${narrative.period.end.toLocaleDateString()}\n`;
+    markdown += `**Generated**: ${narrative.generatedAt.toLocaleDateString()}\n\n`;
+
+    // SCQA sections
+    markdown += '## Situation\n\n';
+    markdown += narrative.situation + '\n\n';
+
+    markdown += '## Complication\n\n';
+    markdown += narrative.complication + '\n\n';
+
+    markdown += '## Question\n\n';
+    markdown += narrative.question + '\n\n';
+
+    markdown += '## Answer\n\n';
+    markdown += narrative.answer + '\n\n';
+
+    // Key Metrics
+    markdown += '## Key Metrics\n\n';
+    markdown += '| Metric | Value | Trend | Target |\n';
+    markdown += '|--------|-------|-------|--------|\n';
+
+    for (const metric of narrative.keyMetrics) {
+      const value = this.formatMetricValue(metric);
+      const trend = metric.trend === 'improving' ? '↑' : metric.trend === 'declining' ? '↓' : '→';
+      const target = metric.kpi.targetValue ? this.formatValue(metric.kpi.targetValue, metric.kpi.format) : 'N/A';
+
+      markdown += `| ${metric.kpi.name} | ${value} | ${trend} | ${target} |\n`;
+    }
+
+    // Top Insights
+    markdown += '\n## Top Insights\n\n';
+    narrative.topInsights.forEach((insight, i) => {
+      markdown += `${i + 1}. **${insight.title}**: ${insight.summary}\n`;
+    });
+
+    // Actions
+    markdown += '\n## Actions\n\n';
+    markdown += '### Immediate (This Week)\n\n';
+    narrative.immediateActions.forEach((action, i) => {
+      markdown += `${i + 1}. ${action}\n`;
+    });
+
+    markdown += '\n### Planned (This Month)\n\n';
+    narrative.plannedActions.forEach((action, i) => {
+      markdown += `${i + 1}. ${action}\n`;
+    });
+
+    markdown += '\n### Strategic Considerations (This Quarter)\n\n';
+    narrative.strategicConsiderations.forEach((consideration, i) => {
+      markdown += `${i + 1}. ${consideration}\n`;
+    });
+
+    // Footer
+    markdown += '\n---\n';
+    markdown += `*Confidence Level: ${narrative.confidence}*\n`;
+
+    return markdown;
+  }
+
+  /**
+   * Export to PDF-ready HTML
+   */
+  static toPDFHTML(narrative: ExecutiveNarrative, bluf?: string): string {
+    const styles = `
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #111; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
+        h2 { color: #333; margin-top: 30px; border-bottom: 1px solid #e5e5e5; padding-bottom: 5px; }
+        .bluf { background: #f0f9ff; border: 2px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .bluf pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+        .metadata { color: #666; font-size: 14px; }
+        .metrics-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .metrics-table th, .metrics-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .metrics-table th { background: #f5f5f5; font-weight: 600; }
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .trend-stable { color: #6b7280; }
+        .section { margin: 30px 0; }
+        .actions { background: #fafafa; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        .confidence { text-align: center; color: #666; font-style: italic; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e5e5; }
+        @media print { body { font-size: 11pt; } h1 { page-break-after: avoid; } .section { page-break-inside: avoid; } }
+      </style>
+    `;
+
+    let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Brief - ${narrative.period.end.toLocaleDateString()}</title>
+  ${styles}
+</head>
+<body>
+  <h1>Executive Brief</h1>
+
+  <div class="metadata">
+    <p><strong>Period:</strong> ${narrative.period.start.toLocaleDateString()} - ${narrative.period.end.toLocaleDateString()}</p>
+    <p><strong>Generated:</strong> ${narrative.generatedAt.toLocaleDateString()}</p>
+  </div>`;
+
+    // Add BLUF if provided
+    if (bluf) {
+      html += `
+  <div class="bluf">
+    <h2 style="margin-top: 0;">BLUF (Bottom Line Up Front)</h2>
+    <pre>${bluf}</pre>
+  </div>`;
+    }
+
+    // SCQA sections
+    html += `
+  <div class="section">
+    <h2>Situation</h2>
+    <p>${narrative.situation}</p>
+  </div>
+
+  <div class="section">
+    <h2>Complication</h2>
+    <p>${narrative.complication}</p>
+  </div>
+
+  <div class="section">
+    <h2>Question</h2>
+    <p>${narrative.question}</p>
+  </div>
+
+  <div class="section">
+    <h2>Answer</h2>
+    <p>${narrative.answer}</p>
+  </div>`;
+
+    // Key Metrics table
+    html += `
+  <div class="section">
+    <h2>Key Metrics</h2>
+    <table class="metrics-table">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+          <th>Trend</th>
+          <th>Target</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    for (const metric of narrative.keyMetrics) {
+      const value = this.formatMetricValue(metric);
+      const trendIcon = metric.trend === 'improving' ? '↑' : metric.trend === 'declining' ? '↓' : '→';
+      const trendClass = metric.trend === 'improving' ? 'trend-up' : metric.trend === 'declining' ? 'trend-down' : 'trend-stable';
+      const target = metric.kpi.targetValue ? this.formatValue(metric.kpi.targetValue, metric.kpi.format) : 'N/A';
+
+      html += `
+        <tr>
+          <td>${metric.kpi.name}</td>
+          <td>${value}</td>
+          <td class="${trendClass}">${trendIcon} ${(metric.trendMagnitude * 100).toFixed(1)}%</td>
+          <td>${target}</td>
+        </tr>`;
+    }
+
+    html += `
+      </tbody>
+    </table>
+  </div>`;
+
+    // Actions
+    html += `
+  <div class="section">
+    <h2>Actions</h2>
+
+    <div class="actions">
+      <h3>Immediate (This Week)</h3>
+      <ol>`;
+
+    narrative.immediateActions.forEach(action => {
+      html += `<li>${action}</li>`;
+    });
+
+    html += `
+      </ol>
+    </div>
+
+    <div class="actions">
+      <h3>Planned (This Month)</h3>
+      <ol>`;
+
+    narrative.plannedActions.forEach(action => {
+      html += `<li>${action}</li>`;
+    });
+
+    html += `
+      </ol>
+    </div>
+
+    <div class="actions">
+      <h3>Strategic Considerations (This Quarter)</h3>
+      <ol>`;
+
+    narrative.strategicConsiderations.forEach(consideration => {
+      html += `<li>${consideration}</li>`;
+    });
+
+    html += `
+      </ol>
+    </div>
+  </div>`;
+
+    // Confidence footer
+    html += `
+  <div class="confidence">
+    <p>Confidence Level: ${narrative.confidence}</p>
+  </div>
+
+</body>
+</html>`;
+
+    return html;
+  }
+
+  private static formatMetricValue(snapshot: KPISnapshot): string {
+    return this.formatValue(snapshot.value, snapshot.kpi.format);
+  }
+
+  private static formatValue(value: number, format: string): string {
+    switch (format) {
+      case 'percent':
+        return `${(value * 100).toFixed(1)}%`;
+      case 'currency':
+        return `$${(value / 1000).toFixed(0)}K`;
+      case 'days':
+        return `${value.toFixed(1)} days`;
+      default:
+        return value.toFixed(1);
+    }
   }
 }
 
