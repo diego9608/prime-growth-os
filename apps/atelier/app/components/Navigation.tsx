@@ -10,11 +10,13 @@ import {
   Truck,
   DollarSign,
   FileText,
-  Building2
+  Building2,
+  Brain
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Strategy', href: '/strategy', icon: Brain },
   { name: 'Leads', href: '/leads', icon: Users },
   { name: 'CPQ', href: '/cpq', icon: Calculator },
   { name: 'Stage Gate', href: '/stagegate', icon: GitBranch },
