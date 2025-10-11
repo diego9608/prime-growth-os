@@ -62,6 +62,25 @@ export const viewport: Viewport = {
 }
 ```
 
+#### ❌ **Problema #7: ESLint versión deprecated/unsupported**
+- **Warning**: `eslint@8.55.0: This version is no longer supported`
+- **Error común**: Crear proyectos con versiones desactualizadas por defecto
+- **Causa**: Next.js y create-next-app a veces instalan versiones viejas de ESLint
+- **Solución**: Actualizar a versiones soportadas:
+```json
+{
+  "devDependencies": {
+    "eslint": "^8.57.0",  // NO usar 8.55.0 o anteriores
+    "eslint-config-next": "14.2.18"  // Debe coincidir con versión de Next.js
+  }
+}
+```
+- **Prevención**: SIEMPRE verificar después de crear un proyecto:
+```bash
+npm ls eslint  # Verificar versión instalada
+npm update eslint eslint-config-next  # Actualizar si es necesario
+```
+
 ### 2. Configuración Correcta de netlify.toml
 
 #### Para Apps con Static Export (marketing sites):
@@ -146,11 +165,16 @@ const nextConfig = {
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.0.0",  // Solo si es SSR
-    "eslint": "^8.57.0",  // Versión compatible
-    "eslint-config-next": "14.2.18"  // Match con Next.js
+    "eslint": "^8.57.0",  // CRÍTICO: NO usar 8.55.0 (deprecated)
+    "eslint-config-next": "14.2.18"  // DEBE coincidir con Next.js
   }
 }
 ```
+
+⚠️ **ADVERTENCIA CRÍTICA sobre ESLint:**
+- `create-next-app` frecuentemente instala ESLint 8.55.0 que está DEPRECATED
+- Netlify mostrará warnings pero NO fallará el build
+- SIEMPRE actualizar inmediatamente después de crear el proyecto
 
 ### 5. Configuración de Git y Formato de Commits
 
@@ -276,6 +300,7 @@ cd ../.. && npm install && cd apps/[app] && npm run build
 5. ❌ NO asumas que node_modules existe en apps de monorepo
 6. ❌ NO uses viewport en metadata, expórtalo por separado
 7. ❌ NO uses versiones incompatibles de eslint-config-next con Next.js
+8. ❌ NO uses ESLint 8.55.0 o anteriores (están deprecated)
 
 ### 11. Template de Resolución de Problemas
 
